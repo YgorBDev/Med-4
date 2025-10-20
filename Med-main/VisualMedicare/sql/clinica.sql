@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
   data_nascimento DATE,
   cpf VARCHAR(14) UNIQUE,
   telefone VARCHAR(20),
-  email VARCHAR(255),
-  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  email VARCHAR(255)
 );
 
 -- Médico
@@ -22,8 +21,7 @@ CREATE TABLE IF NOT EXISTS medicos (
   telefone VARCHAR(20),
   especialidade VARCHAR(255),
   email VARCHAR(255),
-  status BOOLEAN DEFAULT TRUE,
-  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  status BOOLEAN DEFAULT TRUE
 );
 
 -- Consulta
@@ -36,7 +34,6 @@ CREATE TABLE IF NOT EXISTS consultas (
   status VARCHAR(20) NOT NULL DEFAULT 'agendada',
   sala VARCHAR(50),
   motivo TEXT,
-  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CHECK (fim > inicio),
   FOREIGN KEY (id_paciente) REFERENCES pacientes(id) ON DELETE CASCADE,
   FOREIGN KEY (id_medico) REFERENCES medicos(id) ON DELETE CASCADE
@@ -57,10 +54,11 @@ CREATE TABLE IF NOT EXISTS pagamentos (
 CREATE TABLE IF NOT EXISTS receitas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_consulta INT NOT NULL,
-  descricao TEXT NOT NULL,
-  data_emissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  medicamento VARCHAR(50),
+  quantidade INT,
+  posologia VARCHAR(50),
+  data_emissao date,
   validade DATE,
-  instrucoes TEXT,
   FOREIGN KEY (id_consulta) REFERENCES consultas(id) ON DELETE CASCADE
 );
 
@@ -113,12 +111,12 @@ INSERT INTO pagamentos (id_consulta, valor, forma_pagamento, status) VALUES
 (5, 130.00, 'Dinheiro', 'pendente');
 
 -- Receitas
-INSERT INTO receitas (id_consulta, descricao, validade, instrucoes) VALUES
-(1, 'Paracetamol 500mg - 1 comprimido a cada 8h', '2025-12-31', 'Tomar após as refeições'),
-(2, 'Ibuprofeno 400mg - 1 comprimido a cada 12h', '2025-11-30', 'Não tomar em jejum'),
-(3, 'Vitamina D 2000 UI - 1 cápsula por dia', '2026-01-15', 'Preferencialmente pela manhã'),
-(4, 'Amoxicilina 500mg - 1 cápsula a cada 8h por 7 dias', '2025-09-30', 'Completar o ciclo do antibiótico'),
-(6, 'Pomada dermatológica - aplicar 2x ao dia', '2025-10-10', 'Aplicar apenas na região afetada');
+INSERT INTO receitas (id_consulta, medicamento, quantidade, posologia, data_emissao, validade) VALUES
+(1, 'Paracetamol', 10, '- 1 comprimido a cada 8h', '2025-10-20', '2025-12-31'),
+(2, 'Ibuprofeno', 400, '- 1 comprimido a cada 12h', '2025-10-20', '2025-11-30'),
+(3, 'Vitamina D', 2000, 'UI - 1 cápsula por dia', '2025-10-20', '2026-01-15'),
+(4, 'Amoxicilina', 500, '- 1 cápsula a cada 8h por 7 dias', '2025-10-20', '2025-09-30'),
+(6, 'Pomada dermatológica', 1, '- aplicar 2x ao dia', '2025-10-10', '2025-12-31');
 
 -- View: consultas futuras
 CREATE OR REPLACE VIEW vw_consultas_futuras AS
